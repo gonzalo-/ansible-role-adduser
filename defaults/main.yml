@@ -1,0 +1,10 @@
+---
+adduser_user_name: '{{ username }}'
+adduser_user_home: '/home/{{ username }}'
+adduser_user_home_perms: '0700'
+adduser_user_comments: '{{ username }}'
+adduser_password: '{{ password }}'
+
+adduser_public_keys:
+#- {{ username }}.pub
+- /etc/ansible/keys/{{ username }}.pub

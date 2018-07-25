@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: gonzalo-
+  description: Add OpenBSD user and in doas.conf file
+  license: BSD
+  min_ansible_version: 1.9
+  galaxy_tags:
+  - openbsd
+  - system
+  - ssh
+  platforms:
+  - name: OpenBSD
+    versions:
+     - all
+     - 5.6
+     - 5.7
+     - 5.8
+     - 5.9
+     - 6.0
+dependencies: []
+

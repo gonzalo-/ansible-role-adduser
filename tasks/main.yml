@@ -1,0 +1,42 @@
+---
+- name: Add user
+  user: name={{ adduser_user_name }} password="{{ adduser_password }}" comment="{{ adduser_user_comments }}" shell=/bin/sh
+  become: yes
+
+- name: Add user OpenBSD
+  user: name={{ adduser_user_name }} shell=/bin/sh
+  become: yes
+  when: ansible_distribution == 'OpenBSD'
+
+- name: Set /home/{{  adduser_user_name }} permissions to 0700
+  file: "dest={{ adduser_user_home }} owner={{ adduser_user_name }} mode={{ adduser_user_home_perms }} state=directory"
+  become: yes
+
+- debug: var=adduser_public_keys
+- name: Add authorized keys for {{ adduser_user_name }} user
+  authorized_key:
+    "user='{{ adduser_user_name }}' key='{{ item }}'"
+  with_file: "{{ adduser_public_keys }}"
+  when: adduser_public_keys is defined and adduser_public_keys != "" and adduser_sshkey_options is not defined
+  become: yes
+
+- name: Add authorized keys for {{ adduser_user_name }} user - key_options
+  authorized_key:
+    user: "{{ adduser_user_name }}"
+    key: "{{ item }}"
+    key_options: "{{ adduser_sshkey_options }}"
+  with_file: "{{ adduser_public_keys }}"
+  when: adduser_public_keys is defined and adduser_public_keys != "" and adduser_sshkey_options is defined
+  become: yes
+
+- name: SSH authorized_keys {{ adduser_user_name }}
+  file:
+    dest={{ adduser_user_home }}/.ssh owner={{ adduser_user_name }} mode=700 state=directory
+  become: yes
+  when: ansible_distribution != 'OpenBSD' and ansible_os_family != 'Darwin'
+
+- stat: path=/etc/doas.conf
+  register: doas
+- name: Add user to doas.conf
+  lineinfile: "dest=/etc/doas.conf line='permit {{ adduser_user_name }} as root' state=present"
+  become: yes

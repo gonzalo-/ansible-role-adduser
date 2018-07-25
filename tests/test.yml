@@ -1,0 +1,10 @@
+---
+- hosts: all
+  roles:
+  - role: adduser
+
+  become: True
+
+  vars:
+  username: gonzalo
+  password: HoLa.321
